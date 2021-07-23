@@ -3,6 +3,38 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express')
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'RestAPI',
+    version: '1.0.0',
+    description: 'Rest API Server',
+    license: {
+      name: 'Licensed Under MIT',
+      url: "https://spdx.org/license/MIT.html"
+    },
+    contact: {
+      name: 'Author',
+      url: 'https://www.grepiu.com'
+    }
+  },
+  servers: [
+    {
+      url: 'http://localhost:3000',
+      description: 'Development Server'
+    }
+  ]
+}
+
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,6 +45,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
